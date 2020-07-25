@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/swaggo/http-swagger"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"todo/api"
 	"todo/config"
+	_ "todo/docs"
 )
 
 func init() {
@@ -25,6 +27,8 @@ func main() {
 
 	openLogFile(config.LogFilePath)
 	routes := api.NewRouter()
+
+	routes.PathPrefix("/documentation/").Handler(httpSwagger.WrapHandler)
 	log.Fatal(http.ListenAndServe(":8080", logRequest(routes)))
 }
 

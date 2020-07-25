@@ -253,8 +253,9 @@ func CountMaxCreatedTasks() ([]MaxTask, error) {
 	startVal := maxList[0]
 	index := 0
 	for i, val := range maxList {
-		if val != startVal {
-			index = i - 1
+		if val.Count != startVal.Count {
+			index = i
+			break
 		}
 	}
 

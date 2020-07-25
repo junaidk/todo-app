@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -26,6 +25,15 @@ func writeResponse(w http.ResponseWriter, data []byte) {
 	w.Write(data)
 }
 
+// CountTasks godoc
+// @Summary Count of total tasks, completed tasks, and remaining tasks
+// @Description Count of total tasks, completed tasks, and remaining tasks
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} reports.CountTaskReport
+// @Failure 500 {object} HTTPError
+// @Router /count-tasks [get]
 func CountTasks(w http.ResponseWriter, r *http.Request) {
 
 	cData, ok := cacheRead(CountTasksKind)
@@ -36,7 +44,7 @@ func CountTasks(w http.ResponseWriter, r *http.Request) {
 	out, err := reports.CountTasks()
 
 	if err != nil {
-		errBadRequest(w, []byte(fmt.Sprintf(`{"message": "%s"}`, err)))
+		NewError(w, 500, err)
 		return
 	}
 
@@ -46,6 +54,15 @@ func CountTasks(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// CalculateAvg godoc
+// @Summary Average number of tasks completed per day
+// @Description Average number of tasks completed per day
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} CalculateAvgResp
+// @Failure 500 {object} HTTPError
+// @Router /calculate-avg [get]
 func CalculateAvg(w http.ResponseWriter, r *http.Request) {
 
 	cData, ok := cacheRead(CalculateAvgKind)
@@ -56,21 +73,30 @@ func CalculateAvg(w http.ResponseWriter, r *http.Request) {
 	out, err := reports.CalculateAvg()
 
 	if err != nil {
-		errBadRequest(w, []byte(fmt.Sprintf(`{"message": "%s"}`, err)))
+		NewError(w, 500, err)
 		return
 	}
 
-	obj := struct {
-		AvgPerDay float32 `json:"avg_per_day"`
-	}{
-		AvgPerDay: out,
-	}
+	obj := CalculateAvgResp{AvgPerDay: out}
 
 	resp, _ := json.Marshal(obj)
 	cacheWrite(CalculateAvgKind, resp)
 	writeResponse(w, resp)
 }
 
+type CalculateAvgResp struct {
+	AvgPerDay float32 `json:"avg_per_day"`
+}
+
+// CountMaxCompleted godoc
+// @Summary maximum number of tasks were completed in a single day
+// @Description maximum number of tasks were completed in a single day
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} CountMaxCompletedResp
+// @Failure 500 {object} HTTPError
+// @Router /count-max-completed [get]
 func CountMaxCompleted(w http.ResponseWriter, r *http.Request) {
 
 	cData, ok := cacheRead(CountMaxCompletedKind)
@@ -82,20 +108,30 @@ func CountMaxCompleted(w http.ResponseWriter, r *http.Request) {
 	out, err := reports.CountMaxCompletedTasks()
 
 	if err != nil {
-		errBadRequest(w, []byte(fmt.Sprintf(`{"message": "%s"}`, err)))
+		NewError(w, 500, err)
 		return
 	}
 
-	obj := struct {
-		MaxCompleteDate string `json:"max_complete_date"`
-	}{
-		MaxCompleteDate: out,
-	}
+	obj := CountMaxCompletedResp{MaxCompleteDate: out}
 
 	resp, _ := json.Marshal(obj)
 	cacheWrite(CountMaxCompletedKind, resp)
 	writeResponse(w, resp)
 }
+
+type CountMaxCompletedResp struct {
+	MaxCompleteDate string `json:"max_complete_date"`
+}
+
+// CountMaxCreated godoc
+// @Summary Count maximum number of tasks added on a particular day
+// @Description Count maximum number of tasks added on a particular day
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} reports.MaxTask
+// @Failure 500 {object} HTTPError
+// @Router /count-max-created [get]
 func CountMaxCreated(w http.ResponseWriter, r *http.Request) {
 	cData, ok := cacheRead(CountMaxCreatedKind)
 	if ok {
@@ -105,7 +141,7 @@ func CountMaxCreated(w http.ResponseWriter, r *http.Request) {
 	out, err := reports.CountMaxCreatedTasks()
 
 	if err != nil {
-		errBadRequest(w, []byte(fmt.Sprintf(`{"message": "%s"}`, err)))
+		NewError(w, 500, err)
 		return
 	}
 

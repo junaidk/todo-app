@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
@@ -18,35 +19,22 @@ func Init() error {
 	return err
 }
 
-func errBadRequest(w http.ResponseWriter, msg []byte) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write(msg)
-}
-
-func errNotFound(w http.ResponseWriter, msg []byte) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotFound)
-	w.Write(msg)
-}
-
-// @Tags Create Task Handler
-// Create Task Handler  godoc
-// @Summary create kubernetes cluster
-// @Description create kubernetes cluster on cloud nodes
-// @Param cloud			path	string	true	"public cloud name e.g aws, gcp"
-// @Param project_id	path	string	true	"id of the project"
-// @Param	X-Profile-Id	header	string	false	"{X-Profile-Id}"
-// @Param X-Auth-Token  header  string  false    "X-Auth-Token"
-// @Produce json
-// @Success 200 "{"status": "kubernetes creation in progress for project {name}"}"
-// @Failure 400 "{"error": "error msg", "description" : "error description"}"
-// @router /create/{cloud}/{project_id} [post]
+// CreateTodo godoc
+// @Summary Creates a Task item
+// @Description creates a Task item
+// @Tags Crud
+// @Accept  json
+// @Produce  json
+// @Param account body datastore.ToDo true "Creates a Task"
+// @Success 200 {object} datastore.ToDo
+// @Failure 400 {object} HTTPError
+// @Failure 500 {object} HTTPError
+// @Router /todo [post]
 func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Invalid Request Body"}`))
+		NewError(w, 400, err)
 		return
 	}
 
@@ -54,14 +42,14 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &todo)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Invalid Request Body"}`))
+		NewError(w, 400, err)
 		return
 	}
 
 	todo.CreationDate = time.Now()
 	out, err := ds.WriteRecord(todo)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Error creating todo item"}`))
+		NewError(w, 500, err)
 		return
 	}
 
@@ -71,17 +59,28 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
+// UpdateTodo godoc
+// @Summary Updates a ToDo item
+// @Description updates a ToDo item
+// @Tags Crud
+// @Accept  json
+// @Produce  json
+// @Param  todoId path string true "ToDO task ID"
+// @Success 200 {object} datastore.ToDo
+// @Failure 400 {object} HTTPError
+// @Failure 500 {object} HTTPError
+// @Router /todo/{todoId} [update]
 func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id, ok := vars["todoId"]
 	if !ok {
-		errBadRequest(w, []byte(`{"message": "item id not provided"}`))
+		NewError(w, 400, errors.New("item id not provided"))
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Invalid Request Body"}`))
+		NewError(w, 400, err)
 		return
 	}
 
@@ -89,14 +88,14 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &todo)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Invalid Request Body"}`))
+		NewError(w, 400, err)
 		return
 	}
 
 	todo.ID = id
 	out, err := ds.UpdateRecord(todo)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Error updating todo item"}`))
+		NewError(w, 500, err)
 		return
 	}
 
@@ -106,16 +105,28 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 
 }
+
+// DeleteTodo godoc
+// @Summary Deletes a ToDo item
+// @Description delete a ToDo item
+// @Tags Crud
+// @Accept  json
+// @Produce  json
+// @Param  todoId path string true "ToDO task ID"
+// @Success 200 {object} datastore.ToDo
+// @Failure 400 {object} HTTPError
+// @Failure 500 {object} HTTPError
+// @Router /todo/{todoId} [delete]
 func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["todoId"]
 	if !ok {
-		errBadRequest(w, []byte(`{"message": "item id not provided"}`))
+		NewError(w, 400, errors.New("item id not provided"))
 	}
 
 	err := ds.DeleteRecord(id)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Error deleting todo item"}`))
+		NewError(w, 500, err)
 		return
 	}
 
@@ -123,6 +134,17 @@ func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 }
+
+// GetTodoList godoc
+// @Summary Get List of ToDo items
+// @Description get List of ToDo items
+// @Tags Crud
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} datastore.ToDo
+// @Failure 400 {object} HTTPError
+// @Failure 500 {object} HTTPError
+// @Router /todo [get]
 func GetListHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageNum := 0
@@ -146,7 +168,7 @@ func GetListHandler(w http.ResponseWriter, r *http.Request) {
 
 	out, err := ds.ReadAllRecord()
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Error creating todo item"}`))
+		NewError(w, 500, err)
 		return
 	}
 
@@ -170,17 +192,30 @@ func GetListHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(resp)
 }
+
+// GetTodo godoc
+// @Summary Get ToDo item
+// @Description get List of ToDo items
+// @Tags Crud
+// @Accept  json
+// @Produce  json
+// @Param  todoId path string true "ToDO task ID"
+// @Success 200 {object} datastore.ToDo
+// @Failure 400 {object} HTTPError
+// @Failure 500 {object} HTTPError
+// @Router /todo/{todoId} [get]
 func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id, ok := vars["todoId"]
 	if !ok {
-		errBadRequest(w, []byte(`{"message": "item id not provided"}`))
+		NewError(w, 400, errors.New("item id not provided"))
+		return
 	}
 
 	out, err := ds.ReadRecord(id)
 	if err != nil {
-		errBadRequest(w, []byte(`{"message": "Error retrieving todo item"}`))
+		NewError(w, 500, err)
 		return
 	}
 
