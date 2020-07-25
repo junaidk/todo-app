@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 	"todo/config"
+	"todo/datastore"
 	"todo/reports"
 )
 
@@ -17,6 +18,7 @@ const (
 	CalculateAvgKind      = "CalculateAvgKind"
 	CountMaxCompletedKind = "CountMaxCompletedKind"
 	CountMaxCreatedKind   = "CountMaxCreatedKind"
+	FindSimilarTaskKind   = "FindSimilarTaskKind"
 )
 
 func writeResponse(w http.ResponseWriter, data []byte) {
@@ -187,4 +189,39 @@ func cacheWrite(cacheKind string, data []byte) error {
 	err := ioutil.WriteFile(fPath, data, 0755)
 
 	return err
+}
+
+// FindSimilarTask godoc
+// @Summary Return user a list of similar tasks
+// @Description Return user a list of similar tasks
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SimilarTaskList
+// @Failure 500 {object} HTTPError
+// @Router /find-similar-task [get]
+func FindSimilarTask(w http.ResponseWriter, r *http.Request) {
+	//cData, ok := cacheRead(FindSimilarTaskKind)
+	//if ok {
+	//	writeResponse(w, cData)
+	//	return
+	//}
+
+	out, err := reports.FindSimilarTasks()
+
+	if err != nil {
+		NewError(w, 500, err)
+		return
+	}
+
+	msg := SimilarTaskList{
+		SimilarTask: out,
+	}
+	resp, _ := json.Marshal(msg)
+	//cacheWrite(FindSimilarTaskKind, resp)
+	writeResponse(w, resp)
+}
+
+type SimilarTaskList struct {
+	SimilarTask [][]datastore.ToDo
 }

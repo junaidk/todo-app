@@ -95,4 +95,10 @@ var reportRoutes = Routes{
 		"/count-max-created",
 		CountMaxCreated,
 	},
+	Route{
+		"Find Similar Task ",
+		"GET",
+		"/find-similar-task",
+		FindSimilarTask,
+	},
 }

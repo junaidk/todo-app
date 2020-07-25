@@ -18,6 +18,15 @@ definitions:
         example: status bad request
         type: string
     type: object
+  api.SimilarTaskList:
+    properties:
+      similarTask:
+        items:
+          items:
+            $ref: '#/definitions/datastore.ToDo'
+          type: array
+        type: array
+    type: object
   datastore.ToDo:
     properties:
       attachments:
@@ -135,11 +144,41 @@ paths:
       summary: Count of total tasks, completed tasks, and remaining tasks
       tags:
       - Reports
+  /find-similar-task:
+    get:
+      consumes:
+      - application/json
+      description: Return user a list of similar tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SimilarTaskList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Return user a list of similar tasks
+      tags:
+      - Reports
   /todo:
     get:
       consumes:
       - application/json
       description: get List of ToDo items
+      parameters:
+      - description: result page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: result page size
+        in: query
+        name: limit
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -244,6 +283,40 @@ paths:
           schema:
             $ref: '#/definitions/api.HTTPError'
       summary: Get ToDo item
+      tags:
+      - Crud
+    put:
+      consumes:
+      - application/json
+      description: updates a ToDo item
+      parameters:
+      - description: ToDO task ID
+        in: path
+        name: todoId
+        required: true
+        type: string
+      - description: Creates a Task
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/datastore.ToDo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/datastore.ToDo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Updates a ToDo item
       tags:
       - Crud
 swagger: "2.0"

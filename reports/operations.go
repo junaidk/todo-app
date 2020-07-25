@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 	"todo/config"
@@ -259,5 +260,86 @@ func CountMaxCreatedTasks() ([]MaxTask, error) {
 		}
 	}
 
+	if index == 0 {
+		index = len(maxList)
+	}
 	return maxList[:index], nil
+}
+
+func FindSimilarTasks() ([][]datastore.ToDo, error) {
+
+	fileName := config.DataStorePath
+
+	data, err := ioutil.ReadFile(fileName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make(map[string]datastore.ToDo)
+
+	err = json.Unmarshal(data, &out)
+	if err != nil {
+		return nil, err
+	}
+
+	index := make(map[string][]string)
+
+	for key, task := range out {
+		tokens := strings.Split(task.Description, " ")
+		for _, token := range tokens {
+			arr := index[token]
+			arr = append(arr, key)
+			index[token] = arr
+		}
+
+	}
+
+	var similarItemList [][]datastore.ToDo
+	for key, task := range out {
+		similar := findSimilar(task.Description, index)
+		var row []datastore.ToDo
+		for _, item := range similar {
+			if item != key {
+				row = append(row, out[item])
+			}
+		}
+		if len(row) >= 1 {
+			row = append(row, task)
+			similarItemList = append(similarItemList, row)
+		}
+	}
+
+	return similarItemList, nil
+
+}
+func findSimilar(input string, index map[string][]string) []string {
+
+	tokens := strings.Split(input, " ")
+
+	matchCounts := make(map[string]int)
+	for _, token := range tokens {
+		sampleStrList := index[token]
+
+		for _, str := range sampleStrList {
+			_, ok := matchCounts[str]
+			if !ok {
+				matchCounts[str] = 1
+			} else {
+				matchCounts[str] = matchCounts[str] + 1
+			}
+		}
+
+	}
+
+	currLength := len(tokens)
+	var similar []string
+
+	for key, matchCount := range matchCounts {
+		if matchCount >= currLength {
+			similar = append(similar, key)
+		}
+	}
+
+	return similar
 }

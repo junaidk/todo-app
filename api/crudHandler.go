@@ -47,6 +47,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	todo.CreationDate = time.Now()
+	todo.ID = ""
 	out, err := ds.WriteRecord(todo)
 	if err != nil {
 		NewError(w, 500, err)
@@ -66,10 +67,11 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Param  todoId path string true "ToDO task ID"
+// @Param account body datastore.ToDo true "Creates a Task"
 // @Success 200 {object} datastore.ToDo
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
-// @Router /todo/{todoId} [update]
+// @Router /todo/{todoId} [put]
 func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
@@ -141,6 +143,8 @@ func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags Crud
 // @Accept  json
 // @Produce  json
+// @Param page query int true "result page number"
+// @Param limit query int true "result page size"
 // @Success 200 {array} datastore.ToDo
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
@@ -148,7 +152,7 @@ func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 func GetListHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageNum := 0
-	limitNum := 0
+	limitNum := 5
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
 
@@ -180,13 +184,21 @@ func GetListHandler(w http.ResponseWriter, r *http.Request) {
 	end := limitNum + start
 	if end >= len(out) {
 		pageNum = 0
-		limitNum = 5
+		limitNum = len(out)
+
 		start = pageNum * limitNum
 		end = limitNum + start
 	}
-
+	if end == 0 {
+		end = 1
+	} else if end > 10 {
+		end = 10
+	}
 	out = out[start:end]
 
+	if out == nil {
+		out = make([]datastore.ToDo, 0)
+	}
 	resp, _ := json.Marshal(out)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

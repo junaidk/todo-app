@@ -141,6 +141,35 @@ var doc = `{
                 }
             }
         },
+        "/find-similar-task": {
+            "get": {
+                "description": "Return user a list of similar tasks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Return user a list of similar tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SimilarTaskList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/todo": {
             "get": {
                 "description": "get List of ToDo items",
@@ -154,6 +183,22 @@ var doc = `{
                     "Crud"
                 ],
                 "summary": "Get List of ToDo items",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "result page number",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "result page size",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -266,6 +311,57 @@ var doc = `{
                     }
                 }
             },
+            "put": {
+                "description": "updates a ToDo item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Crud"
+                ],
+                "summary": "Updates a ToDo item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ToDO task ID",
+                        "name": "todoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Creates a Task",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/datastore.ToDo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/datastore.ToDo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.HTTPError"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "delete a ToDo item",
                 "consumes": [
@@ -337,6 +433,20 @@ var doc = `{
                 "message": {
                     "type": "string",
                     "example": "status bad request"
+                }
+            }
+        },
+        "api.SimilarTaskList": {
+            "type": "object",
+            "properties": {
+                "similarTask": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/datastore.ToDo"
+                        }
+                    }
                 }
             }
         },

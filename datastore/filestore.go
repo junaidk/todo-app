@@ -70,7 +70,7 @@ func (f *FileStore) WriteRecord(do ToDo) (ToDo, error) {
 		return do, nil
 	}
 	data[do.ID] = do
-	jOut, err := json.Marshal(data)
+	jOut, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return ToDo{}, err
 	}
@@ -155,7 +155,7 @@ func (f *FileStore) UpdateRecord(do ToDo) (ToDo, error) {
 		return ToDo{}, errors.New("No Record Found for id: " + do.ID)
 	}
 	data[do.ID] = do
-	jOut, err := json.Marshal(data)
+	jOut, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return ToDo{}, err
 	}
@@ -184,7 +184,7 @@ func (f *FileStore) DeleteRecord(id string) error {
 		return errors.New("No Record Found for id: " + id)
 	}
 	delete(data, id)
-	jOut, err := json.Marshal(data)
+	jOut, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return err
 	}

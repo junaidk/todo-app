@@ -13,9 +13,11 @@ import (
 )
 
 func init() {
-	config.DataStorePath = "/home/junaid/Documents/Data/recruitment-tests/emumba/todo/dat.json"
-	config.CacheDirPath = "/home/junaid/Documents/Data/recruitment-tests/emumba/todo/Cache"
-	config.LogFilePath = "/home/junaid/Documents/Data/recruitment-tests/emumba/todo/logFile.log"
+
+	config.DataStorePath = "/tmp/test.json"
+	config.CacheDirPath = "/tmp/Cache"
+	config.LogFilePath = "/tmp/logFile.log"
+
 	createDirectory(config.CacheDirPath)
 }
 
