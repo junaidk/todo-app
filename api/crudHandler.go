@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 	"todo/datastore"
 )
@@ -69,6 +70,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 // @Param  todoId path string true "ToDO task ID"
 // @Param account body datastore.ToDo true "Creates a Task"
 // @Success 200 {object} datastore.ToDo
+// @Failure 404 {object} HTTPError
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
 // @Router /todo/{todoId} [put]
@@ -97,7 +99,11 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	todo.ID = id
 	out, err := ds.UpdateRecord(todo)
 	if err != nil {
-		NewError(w, 500, err)
+		if strings.Contains(err.Error(), "No Record Found") {
+			NewError(w, 404, err)
+		} else {
+			NewError(w, 500, err)
+		}
 		return
 	}
 
@@ -116,6 +122,7 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param  todoId path string true "ToDO task ID"
 // @Success 200 {object} datastore.ToDo
+// @Failure 404 {object} HTTPError
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
 // @Router /todo/{todoId} [delete]
@@ -128,7 +135,11 @@ func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := ds.DeleteRecord(id)
 	if err != nil {
-		NewError(w, 500, err)
+		if strings.Contains(err.Error(), "No Record Found") {
+			NewError(w, 404, err)
+		} else {
+			NewError(w, 500, err)
+		}
 		return
 	}
 
@@ -213,6 +224,7 @@ func GetListHandler(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param  todoId path string true "ToDO task ID"
 // @Success 200 {object} datastore.ToDo
+// @Failure 404 {object} HTTPError
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
 // @Router /todo/{todoId} [get]
@@ -227,7 +239,11 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	out, err := ds.ReadRecord(id)
 	if err != nil {
-		NewError(w, 500, err)
+		if strings.Contains(err.Error(), "No Record Found") {
+			NewError(w, 404, err)
+		} else {
+			NewError(w, 500, err)
+		}
 		return
 	}
 
