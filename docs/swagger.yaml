@@ -1,0 +1,249 @@
+definitions:
+  api.CalculateAvgResp:
+    properties:
+      avg_per_day:
+        type: number
+    type: object
+  api.CountMaxCompletedResp:
+    properties:
+      max_complete_date:
+        type: string
+    type: object
+  api.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+  datastore.ToDo:
+    properties:
+      attachments:
+        items:
+          type: string
+        type: array
+      completion_date:
+        type: string
+      creation_date:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  reports.CountTaskReport:
+    properties:
+      completed:
+        type: integer
+      remaining:
+        type: integer
+      total:
+        type: integer
+    type: object
+  reports.MaxTask:
+    properties:
+      count:
+        type: integer
+      date:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /calculate-avg:
+    get:
+      consumes:
+      - application/json
+      description: Average number of tasks completed per day
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CalculateAvgResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Average number of tasks completed per day
+      tags:
+      - Reports
+  /count-max-completed:
+    get:
+      consumes:
+      - application/json
+      description: maximum number of tasks were completed in a single day
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.CountMaxCompletedResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: maximum number of tasks were completed in a single day
+      tags:
+      - Reports
+  /count-max-created:
+    get:
+      consumes:
+      - application/json
+      description: Count maximum number of tasks added on a particular day
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reports.MaxTask'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Count maximum number of tasks added on a particular day
+      tags:
+      - Reports
+  /count-tasks:
+    get:
+      consumes:
+      - application/json
+      description: Count of total tasks, completed tasks, and remaining tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reports.CountTaskReport'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Count of total tasks, completed tasks, and remaining tasks
+      tags:
+      - Reports
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: get List of ToDo items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/datastore.ToDo'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Get List of ToDo items
+      tags:
+      - Crud
+    post:
+      consumes:
+      - application/json
+      description: creates a Task item
+      parameters:
+      - description: Creates a Task
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/datastore.ToDo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/datastore.ToDo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Creates a Task item
+      tags:
+      - Crud
+  /todo/{todoId}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a ToDo item
+      parameters:
+      - description: ToDO task ID
+        in: path
+        name: todoId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/datastore.ToDo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Deletes a ToDo item
+      tags:
+      - Crud
+    get:
+      consumes:
+      - application/json
+      description: get List of ToDo items
+      parameters:
+      - description: ToDO task ID
+        in: path
+        name: todoId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/datastore.ToDo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      summary: Get ToDo item
+      tags:
+      - Crud
+swagger: "2.0"
