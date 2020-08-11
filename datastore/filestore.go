@@ -71,6 +71,7 @@ func (f *FileStore) WriteRecord(do ToDo) (ToDo, error) {
 	}
 	data[do.ID] = do
 	jOut, err := json.MarshalIndent(data, "", " ")
+
 	if err != nil {
 		return ToDo{}, err
 	}

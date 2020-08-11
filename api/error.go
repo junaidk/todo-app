@@ -13,7 +13,7 @@ func NewError(w http.ResponseWriter, status int, err error) {
 
 	msg, _ := json.Marshal(er)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(status)
 	w.Write(msg)
 }
 

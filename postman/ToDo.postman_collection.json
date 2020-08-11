@@ -1,0 +1,249 @@
+{
+	"info": {
+		"_postman_id": "297c1697-01e3-46d7-93dd-5e805775e6ee",
+		"name": "ToDo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8080/todo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"title\":\"kubecontrol\",\"description\":\"kubecontrol\",\"attachments\":[\"asdasd\"],\"status\":\"done\",\"creation_date\":\"2020-07-24T13:40:02.123059476+05:00\",\"completion_date\":\"2020-07-24T13:40:02.123059599+05:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/todo",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"todo"
+					]
+				},
+				"description": "Create"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/todo/0K7TBjtDp",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"title\":\"kubecontrol2\",\"description\":\"kubecontrol\",\"attachments\":[\"asdasd\"],\"status\":\"done\",\"creation_date\":\"2020-07-24T13:40:02.123059476+05:00\",\"completion_date\":\"2020-07-24T13:40:02.123059599+05:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/todo/:id",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"todo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "Kx01-raYM"
+						}
+					]
+				},
+				"description": "Update"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/todo?page=1&limit=1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/todo?page=2&limit=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"todo"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						}
+					]
+				},
+				"description": "list"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/todo/0K7TBjtDp",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/todo/:id",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"todo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "Kx01-raYM"
+						}
+					]
+				},
+				"description": "get"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/todo/0K7TBjtDp",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/todo/:id",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"todo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "Kx01-raYM"
+						}
+					]
+				},
+				"description": "delete"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/count-tasks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/count-tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"count-tasks"
+					]
+				},
+				"description": "count-tasks"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/calculate-avg",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/calculate-avg",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"calculate-avg"
+					]
+				},
+				"description": "calculate-avg"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/count-max-completed",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/count-max-completed",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"count-max-completed"
+					]
+				},
+				"description": "count-max-completed"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/count-max-created",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/count-max-created",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"count-max-created"
+					]
+				},
+				"description": "count-max-created"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/find-similar-task",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/find-similar-task",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"find-similar-task"
+					]
+				},
+				"description": "find-similar-task"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

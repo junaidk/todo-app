@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/mailru/easyjson v0.7.1 // indirect
-	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba // indirect
+	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba
 	github.com/swaggo/swag v1.6.7
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/urfave/cli/v2 v2.2.0 // indirect

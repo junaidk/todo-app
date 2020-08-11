@@ -13,7 +13,7 @@ run `main.go` file
 
 `go run main.go`	
 
-server will start at localhost:8080
+server will start at `localhost:8080`
 
 ## API Doc
 
@@ -21,4 +21,6 @@ API documentation is at
 
 `http://localhost:8080/documentation/index.html`
 
-## 
+##  Postman Collection
+
+postman collection is in postman directory.
